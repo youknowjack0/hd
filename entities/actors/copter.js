@@ -49,10 +49,12 @@ HD.Copter.prototype = {
         RUDDER: 0.02, //radians/s/s
         RUDDERMAX: 4, //radians/s
         RUDDERRESISTANCE: 0.98,
-        PITCH: 1, //radians/s/s
-        //PITCHMAX: 10, //radians/s
-        ROLL: 1, //radians/s/s
-        //ROLLMAX: 10, //radians/s
+        ROLLRESISTANCE: 0.98,
+        PITCHRESISTANCE: 0.98,
+        PITCH: 0.01, //radians/s/s
+        PITCHMAX: 10, //radians/s
+        ROLL: 0.01, //radians/s/s
+        ROLLMAX: 10, //radians/s
         PROP: 10, //radians/s
         PROPPOWER: 30,
         CAMOFFSET: new THREE.Vector3(100, 100, 100),
@@ -148,13 +150,15 @@ HD.Copter.prototype = {
 
 
         if (game.mousePos) {
-            this.pitch = this.getPitch(game);
-            this.roll = this.getRoll(game);
+            this.pitch += this.getPitch(game);
+            this.roll += this.getRoll(game);
         }
 
         
         this.rudder += this.getRudder(game);
         this.rudder *= this.constants.RUDDERRESISTANCE;
+        this.roll *= this.constants.ROLLRESISTANCE;
+        this.pitch *= this.constants.PITCHRESISTANCE;
     },
 
     getRoll: function (game) {
