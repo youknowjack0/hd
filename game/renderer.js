@@ -34,7 +34,7 @@ HD.Renderer = function() {
 
     container.appendChild(gl.domElement);
 
-    var camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
+    var camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 100000);
     this.camera = camera;
     camera.position = new THREE.Vector3(100, 100, 100);
 

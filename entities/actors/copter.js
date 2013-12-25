@@ -45,12 +45,12 @@ HD.Copter.prototype = {
         POWER: 20,
         GRAVITY: -9.81,
         UP: new THREE.Vector3(0, 1, 0),
-        RESISTANCE: 0.995,
+        RESISTANCE: 0.001,
         RUDDER: 0.02, //radians/s/s
         RUDDERMAX: 4, //radians/s
-        RUDDERRESISTANCE: 0.98,
-        ROLLRESISTANCE: 0.98,
-        PITCHRESISTANCE: 0.98,
+        RUDDERRESISTANCE: 0.02,
+        ROLLRESISTANCE: 0.02,
+        PITCHRESISTANCE: 0.02,
         PITCH: 0.01, //radians/s/s
         PITCHMAX: 10, //radians/s
         ROLL: 0.01, //radians/s/s
@@ -83,12 +83,12 @@ HD.Copter.prototype = {
         
 
         this.updateAcceleration(game);
-        this.applyAcceleration();
+        this.applyAcceleration(game);
 
         this.updateRotationAcceleration(game);
         this.applyRotationChange(game);
 
-        this.applyVelocity();
+        this.applyVelocity(game);
 
         //spin the prop
         this.blade.quaternion = this.blade.quaternion.multiplyQuaternions(this.getBladeRotation(game), this.blade.quaternion);
@@ -131,12 +131,12 @@ HD.Copter.prototype = {
         }
     },
 
-    applyAcceleration: function() {
+    applyAcceleration: function(game) {
         this.velocity.add(this.acceleration);
     },
 
-    applyVelocity: function() {
-        this.velocity.multiplyScalar(this.constants.RESISTANCE);
+    applyVelocity: function(game) {
+        this.velocity.multiplyScalar(1 - this.constants.RESISTANCE * game.delta);
 
         this.object3d.position.add(this.velocity);        
         
@@ -156,9 +156,9 @@ HD.Copter.prototype = {
 
         
         this.rudder += this.getRudder(game);
-        this.rudder *= this.constants.RUDDERRESISTANCE;
-        this.roll *= this.constants.ROLLRESISTANCE;
-        this.pitch *= this.constants.PITCHRESISTANCE;
+        this.rudder *= 1 - game.delta* this.constants.RUDDERRESISTANCE;
+        this.roll *= 1 - game.delta * this.constants.ROLLRESISTANCE;
+        this.pitch *= 1 - game.delta * this.constants.PITCHRESISTANCE;
     },
 
     getRoll: function (game) {

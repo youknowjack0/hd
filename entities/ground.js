@@ -1,5 +1,5 @@
 ﻿HD.Ground = function() {
-    var geom = new THREE.PlaneGeometry(10000,10000);
+    var geom = new THREE.PlaneGeometry(100000,100000,100,100);
 
     var mat = new THREE.MeshLambertMaterial({
         map: THREE.ImageUtils.loadTexture('assets/grass128.png')    
@@ -7,11 +7,16 @@
 
     
 
+    for (var i = 0; i < geom.vertices.length; i++) {
+        geom.vertices[i].z = -Math.random() * 1000 - 50;
+    }
+
     var mesh = new THREE.Mesh(geom, mat);
 
-    mesh.overdraw = true;
+    mesh.receiveShadow = true;
     mesh.rotation.x = -Math.PI / 2;
-    mesh.position.y = -50;
+    mesh.overdraw = true;
+    
     this.object3d = mesh;
 };
 
