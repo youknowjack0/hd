@@ -1,7 +1,7 @@
 ﻿HD.Copter = function () {
     var group = new THREE.Object3D();
 
-    var geometry = new THREE.CylinderGeometry(10, 10,40);
+    var geometry = new THREE.CylinderGeometry(2, 2,10);
 
     for ( var i = 0; i < geometry.faces.length; i += 2 ) {
         var hex = Math.random() * 0xffffff;
@@ -25,10 +25,10 @@
     console.log(copter.quaternion);
     
 
-    var bladeG = new THREE.PlaneGeometry(100, 10);
+    var bladeG = new THREE.PlaneGeometry(30, 0.5);
     var bladeMat = new THREE.MeshBasicMaterial( {color: 0x000000});
     var blade = new THREE.Mesh(bladeG, bladeMat);
-    blade.position = new THREE.Vector3(0, 12, 0);
+    blade.position = new THREE.Vector3(0, 3, 0);
     blade.rotation.x = -Math.PI / 2 + 0.5;
     group.add(copter);
     group.add(blade);
@@ -42,21 +42,22 @@ HD.Copter.prototype = {
 
     // adjust these constants to make it awesome
     constants: {
-        POWER: 20,
+        POWERMAX: 30,
+        POWERMIN: 0,//power at idle
         GRAVITY: -9.81,
         UP: new THREE.Vector3(0, 1, 0),
-        RESISTANCE: 0.001,
+        RESISTANCE: 0.2,
         RUDDER: 0.02, //radians/s/s
         RUDDERMAX: 4, //radians/s
-        RUDDERRESISTANCE: 0.02,
-        ROLLRESISTANCE: 0.02,
-        PITCHRESISTANCE: 0.02,
-        PITCH: 0.01, //radians/s/s
-        PITCHMAX: 10, //radians/s
-        ROLL: 0.01, //radians/s/s
-        ROLLMAX: 10, //radians/s
+        RUDDERRESISTANCE: 0.5,
+        ROLLRESISTANCE: 0.5,
+        PITCHRESISTANCE: 0.5,
+        PITCH: 0.001, //radians/s/s
+        PITCHMAX: 0.010, //radians/s
+        ROLL: 0.001, //radians/s/s
+        ROLLMAX: 0.010, //radians/s
         PROP: 10, //radians/s
-        PROPPOWER: 30,
+        PROPPOWER: 50,
         CAMOFFSET: new THREE.Vector3(100, 100, 100),
         XAXIS: new THREE.Vector3(1, 0, 0),
         YAXIS: new THREE.Vector3(0, 1, 0),
@@ -111,7 +112,7 @@ HD.Copter.prototype = {
 
         camera.position = new THREE.Vector3(0, 0, 1);
         camera.position.applyQuaternion(q);
-        camera.position.multiplyScalar(300);
+        camera.position.multiplyScalar(30);
         
         camera.position.add(this.object3d.position);
         //camera.position.z += 50;
@@ -123,12 +124,10 @@ HD.Copter.prototype = {
     },
 
     updateAcceleration: function (game) {
-        var gravity = this.constants.UP.clone().multiplyScalar(this.constants.GRAVITY * game.delta);
+        var gravity = this.constants.UP.clone().multiplyScalar(this.constants.GRAVITY);
         this.acceleration = gravity;
-        if (game.keys.w) {
-            var power = this.getUpUnitVector().multiplyScalar(this.constants.POWER * game.delta);
-            this.acceleration.add(power);            
-        }
+        var power = this.getUpUnitVector().multiplyScalar((game.keys.w ? this.constants.POWERMAX : this.constants.POWERMIN));
+        this.acceleration.add(power);            
     },
 
     applyAcceleration: function(game) {
@@ -138,12 +137,8 @@ HD.Copter.prototype = {
     applyVelocity: function(game) {
         this.velocity.multiplyScalar(1 - this.constants.RESISTANCE * game.delta);
 
-        this.object3d.position.add(this.velocity);        
+        this.object3d.position.add(this.velocity.clone().multiplyScalar(game.delta));        
         
-        if (this.object3d.position.y < 0) {
-            this.object3d.position.y = 0;
-            this.velocity.y = 0;
-        }
     },
 
     updateRotationAcceleration: function(game) {
@@ -161,24 +156,25 @@ HD.Copter.prototype = {
         this.pitch *= 1 - game.delta * this.constants.PITCHRESISTANCE;
     },
 
+    limit: function(val, lower, upper) {
+        return val > lower ? ((val < upper) ? val : upper) : lower;
+    },
+
     getRoll: function (game) {
         var roll = 0;
-        if (this.object3d.position.y > 1) {
-            var xd = game.mousePos.x - game.renderer.windowHalfX;
-            xd = xd / 100 * this.constants.ROLL;
-            roll = -xd;
-        }
-        return roll;
+        var xd = game.mousePos.x - game.renderer.windowHalfX;
+        xd = xd * xd * Math.sign(xd) / 100 * this.constants.ROLL;
+        
+        roll = -xd;
+        return this.limit(roll, -this.constants.ROLLMAX, this.constants.ROLLMAX);
     },
 
     getPitch: function(game) {
         var pitch = 0;
-        if (this.object3d.position.y > 1) {
-            var yd = game.mousePos.y - game.renderer.windowHalfY;
-            yd = yd / 100 * this.constants.PITCH;
-            pitch = yd;
-        }
-        return pitch;
+        var yd = game.mousePos.y - game.renderer.windowHalfY;
+        yd = yd * yd * Math.sign(yd) / 100 * this.constants.PITCH;
+        pitch = yd;
+        return this.limit(pitch, -this.constants.PITCHMAX, this.constants.PITCHMAX);
     },
 
     getRudder: function (game) {
