@@ -44,7 +44,7 @@ HD.Copter.prototype = {
     constants: {
         POWERMAX: 30,
         POWERMIN: 0,//power at idle
-        GRAVITY: -9.81,
+        GRAVITY: -20.81,
         UP: new THREE.Vector3(0, 1, 0),
         RESISTANCE: 0.2,
         RUDDER: 0.02, //radians/s/s
@@ -52,7 +52,7 @@ HD.Copter.prototype = {
         RUDDERRESISTANCE: 0.5,
         ROLLRESISTANCE: 0.5,
         PITCHRESISTANCE: 0.5,
-        PITCH: 0.001, //radians/s/s
+        PITCH: 0.002, //radians/s/s
         PITCHMAX: 0.010, //radians/s
         ROLL: 0.001, //radians/s/s
         ROLLMAX: 0.010, //radians/s
@@ -115,6 +115,7 @@ HD.Copter.prototype = {
         camera.position.multiplyScalar(30);
         
         camera.position.add(this.object3d.position);
+        camera.position.add(this.getUpUnitVector().multiplyScalar(20));
         //camera.position.z += 50;
         //camera.lookAt(this.object3d.position);
     },
@@ -151,9 +152,9 @@ HD.Copter.prototype = {
 
         
         this.rudder += this.getRudder(game);
-        this.rudder *= 1 - game.delta* this.constants.RUDDERRESISTANCE;
+        /*this.rudder *= 1 - game.delta* this.constants.RUDDERRESISTANCE;
         this.roll *= 1 - game.delta * this.constants.ROLLRESISTANCE;
-        this.pitch *= 1 - game.delta * this.constants.PITCHRESISTANCE;
+        this.pitch *= 1 - game.delta * this.constants.PITCHRESISTANCE;*/
     },
 
     limit: function(val, lower, upper) {
@@ -161,20 +162,19 @@ HD.Copter.prototype = {
     },
 
     getRoll: function (game) {
-        var roll = 0;
         var xd = game.mousePos.x - game.renderer.windowHalfX;
-        xd = xd * xd * Math.sign(xd) / 100 * this.constants.ROLL;
-        
-        roll = -xd;
-        return this.limit(roll, -this.constants.ROLLMAX, this.constants.ROLLMAX);
+        xd = - xd * this.constants.ROLL;
+        xd = xd - this.roll;
+        return this.limit(xd, - this.constants.ROLLMAX, this.constants.ROLLMAX);
+
+
     },
 
     getPitch: function(game) {
-        var pitch = 0;
-        var yd = game.mousePos.y - game.renderer.windowHalfY;
-        yd = yd * yd * Math.sign(yd) / 100 * this.constants.PITCH;
-        pitch = yd;
-        return this.limit(pitch, -this.constants.PITCHMAX, this.constants.PITCHMAX);
+        var xd = game.mousePos.y - game.renderer.windowHalfY;
+        xd = xd * this.constants.PITCH;
+        xd = xd - this.pitch;
+        return this.limit(xd, -this.constants.PITCHMAX, this.constants.PITCHMAX);
     },
 
     getRudder: function (game) {

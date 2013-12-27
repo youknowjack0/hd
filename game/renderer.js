@@ -25,18 +25,22 @@ HD.Renderer = function() {
 
     gl.gammaInput = true;
     gl.gammaOutput = true;
-    //gl.physicallyBasedShading = true;
+    gl.physicallyBasedShading = true;
 
-    //gl.shadowMapEnabled = true;
-    //gl.shadowMapAutoUpdate = true;
-    //gl.shadowMapCullFace = THREE.CullFaceBack;
+    gl.shadowMapEnabled = true;
+    gl.shadowMapCullFace = THREE.CullFaceBack;
+
+
     
 
     container.appendChild(gl.domElement);
 
-    var camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 10000000);
+    var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000000);
     this.camera = camera;
     camera.position = new THREE.Vector3(100, 100, 100);
+
+
+
 
     /*
     var geometry = new THREE.CubeGeometry(1, 1, 1);
