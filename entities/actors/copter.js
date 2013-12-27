@@ -42,7 +42,7 @@ HD.Copter.prototype = {
 
     // adjust these constants to make it awesome
     constants: {
-        POWERMAX: 30,
+        POWERMAX: 60,
         POWERMIN: 0,//power at idle
         GRAVITY: -20.81,
         UP: new THREE.Vector3(0, 1, 0),
@@ -52,8 +52,8 @@ HD.Copter.prototype = {
         RUDDERRESISTANCE: 0.5,
         ROLLRESISTANCE: 0.5,
         PITCHRESISTANCE: 0.5,
-        PITCH: 0.002, //radians/s/s
-        PITCHMAX: 0.010, //radians/s
+        PITCH: 0.005, //radians/s/s
+        PITCHMAX: 0.008, //radians/s
         ROLL: 0.001, //radians/s/s
         ROLLMAX: 0.010, //radians/s
         PROP: 10, //radians/s
@@ -105,7 +105,36 @@ HD.Copter.prototype = {
 
     positionCamera: function (game) {
         var camera = game.camera;
+
+        // http://stackoverflow.com/a/11741520 : Joseph Thompson
+        /* should you dare to use it, this code points the camera in teh direction of the velocity
+        var u = this.constants.XAXIS;
+        var v = this.velocity.clone();
+
+        var kCosTheta = u.dot(v);
+
+        var k = Math.abs(v.length());
+
+        var q;
+
+        if (kCosTheta / k == -1) {
+            // 180 degree rotation around any orthogonal vector
+            var other = (Math.abs(u.dot(this.contains.XAXIS)) < 1.0) ? this.constants.XAXIS : this.constants.YAXIS;
+            var i = (new THREE.Vector3()).crossVectors(u, other);
+            q = new THREE.Quaternion(i.x, i.y, i.z, Math.PI);
+        } else {
+            v.crossVectors(u, v);
+            q = new THREE.Quaternion(kCosTheta + k, v.x, v.y, v.z);
+            q.normalize();
+        }
         
+
+        camera.quaternion = q;
+        camera.position = this.object3d.position.clone();
+
+        */
+
+        /* this puts the camera behind the copter and locks it to the copter's orientation */
         var q = this.object3d.quaternion;
         camera.quaternion = q.clone();//.inverse();
         
@@ -116,8 +145,6 @@ HD.Copter.prototype = {
         
         camera.position.add(this.object3d.position);
         camera.position.add(this.getUpUnitVector().multiplyScalar(20));
-        //camera.position.z += 50;
-        //camera.lookAt(this.object3d.position);
     },
 
     getBladeRotation: function(game) {

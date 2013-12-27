@@ -4,7 +4,8 @@
     window.document.addEventListener('keyup', function (e) { me.onKeyUp(e); }, false);
     window.document.addEventListener('mousemove', function (e) { me.onMouseMove(e); }, false);
 
-    this.addEntity(new HD.Copter());
+    var copter = new HD.Copter();
+    this.addEntity(copter);
     this.addEntity(new HD.Ground());
     this.addEntity(new HD.SceneLight());
 };
