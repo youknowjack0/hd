@@ -67,11 +67,18 @@ HD.Renderer.prototype = {
     windowHalfX: window.innerWidth / 2,
     windowHalfY: window.innerHeight / 2,
 
+    eindex: 0,
+
     addGeometry: function(object3d)
     {
+        var name = "ent" + this.eindex;
+        this.eindex++;
+        object3d.name=name;
         this.scene.add(object3d);
-        console.log("added geom");
-        console.log(object3d);
+    },
+
+    removeGeometry: function(object3d) {
+        this.scene.remove(object3d);
     },
 
     onRender: function () {

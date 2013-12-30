@@ -4,11 +4,17 @@
     window.document.addEventListener('keyup', function (e) { me.onKeyUp(e); }, false);
     window.document.addEventListener('mousemove', function (e) { me.onMouseMove(e); }, false);
 
-    var copter = new HD.Copter();
-    this.addEntity(copter);
+    this.copter = new HD.PlayerCopter();
+    this.addEntity(this.copter);
     this.addEntity(new HD.Ground());
     this.addEntity(new HD.SceneLight());
+    this.net = new HD.Network();
+    this.net.join(this);
+
+    this.enemies = {}
 };
+
+
 
 Game.prototype = {
     constructor: Game,
@@ -76,9 +82,43 @@ Game.prototype = {
         for (var i = 0; i < this.onDrawSubscribers.length; i++) {
             this.onDrawSubscribers[i].draw(this);
         }
-    }
+    },
 
-};
+
+    removeEntity: function (entity) {
+        if (entity.object3d) {
+            HD.renderer.removeGeometry(entity.object3d);
+        }
+        if (entity.draw) {
+            var i = this.onDrawSubscribers.indexOf(entity);
+            this.onDrawSubscribers.splice(i,1);
+        }
+    },
+
+    enemyChopper : function(message) {
+        var enemies2 = {};
+        for(var i = 0;i< message.players.length;i++) {
+            var id = message.players[i].playerId;
+
+            if(!this.enemies[id]) {
+                enemies2[id] = new HD.EnemyCopter();
+                this.addEntity(enemies2[id]);
+            } else {
+                enemies2[id] = this.enemies[id];
+                this.enemies[id] = null;
+            }
+            enemies2[id].update(message.players[i],this);
+        }
+
+        for (var key in this.enemies) {
+            if(this.enemies[key] != null)
+                this.removeEntity(this.enemies[key]);
+        }
+
+        this.enemies = enemies2;
+    ;}
+
+}
 
 HD.init = function() {
     HD.renderer = new HD.Renderer(); 
