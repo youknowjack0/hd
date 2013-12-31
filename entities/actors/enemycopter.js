@@ -11,7 +11,7 @@ HD.EnemyCopter.prototype.draw = function(game) {
     var t = this.target.time / this.target.timetotal;
 
     //lerp position
-    this.object3d.position = this.start.position.lerp(this.target.position, t);
+    this.object3d.position = this.start.position.clone().lerp(this.target.position, t);
     if(t > 1)
         return;
     //lerp rotation
