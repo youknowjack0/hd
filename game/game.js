@@ -6,7 +6,7 @@
 
     var copter = new HD.Copter();
     this.addEntity(copter);
-    this.addEntity(new HD.Ground());
+    this.addEntity(new HD.Terrain());
     this.addEntity(new HD.SceneLight());
 };
 

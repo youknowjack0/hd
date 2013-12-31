@@ -42,23 +42,23 @@ HD.Copter.prototype = {
 
     // adjust these constants to make it awesome
     constants: {
-        POWERMAX: 60,
+        POWERMAX: 30,
         POWERMIN: 0,//power at idle
-        GRAVITY: -20.81,
+        GRAVITY: -9.81,
         UP: new THREE.Vector3(0, 1, 0),
-        RESISTANCE: 0.2,
-        RUDDER: 0.02, //radians/s/s
+        RESISTANCE: 0.000000505,
+        RUDDER: 0.015, //radians/s/s
         RUDDERMAX: 4, //radians/s
         RUDDERRESISTANCE: 0.5,
-        ROLLRESISTANCE: 0.5,
-        PITCHRESISTANCE: 0.5,
-        PITCH: 0.005, //radians/s/s
-        PITCHMAX: 0.008, //radians/s
+        ROLLRESISTANCE: 0,
+        PITCHRESISTANCE: 0,
+        PITCH: 0.001, //radians/s/s
+        PITCHMAX: 0.006, //radians/s
         ROLL: 0.001, //radians/s/s
-        ROLLMAX: 0.010, //radians/s
+        ROLLMAX: 0.006, //radians/s
         PROP: 10, //radians/s
         PROPPOWER: 50,
-        CAMOFFSET: new THREE.Vector3(100, 100, 100),
+        CAMOFFSET: new THREE.Vector3(100, 100, 100), //DOES NOT WORK
         XAXIS: new THREE.Vector3(1, 0, 0),
         YAXIS: new THREE.Vector3(0, 1, 0),
         ZAXIS: new THREE.Vector3(0, 0, 1),
@@ -155,7 +155,9 @@ HD.Copter.prototype = {
         var gravity = this.constants.UP.clone().multiplyScalar(this.constants.GRAVITY);
         this.acceleration = gravity;
         var power = this.getUpUnitVector().multiplyScalar((game.keys.w ? this.constants.POWERMAX : this.constants.POWERMIN));
-        this.acceleration.add(power);            
+        this.acceleration.add(power);
+        var airres = this.velocity.clone().normalize().multiplyScalar(-this.velocity.length()*this.velocity.length() * this.constants.RESISTANCE);
+        this.acceleration.add(airres);           
     },
 
     applyAcceleration: function(game) {
@@ -163,7 +165,7 @@ HD.Copter.prototype = {
     },
 
     applyVelocity: function(game) {
-        this.velocity.multiplyScalar(1 - this.constants.RESISTANCE * game.delta);
+        //this.velocity.multiplyScalar(1 - this.constants.RESISTANCE * game.delta);
 
         this.object3d.position.add(this.velocity.clone().multiplyScalar(game.delta));        
         
@@ -179,9 +181,9 @@ HD.Copter.prototype = {
 
         
         this.rudder += this.getRudder(game);
-        /*this.rudder *= 1 - game.delta* this.constants.RUDDERRESISTANCE;
+        this.rudder *= 1 - game.delta* this.constants.RUDDERRESISTANCE;
         this.roll *= 1 - game.delta * this.constants.ROLLRESISTANCE;
-        this.pitch *= 1 - game.delta * this.constants.PITCHRESISTANCE;*/
+        this.pitch *= 1 - game.delta * this.constants.PITCHRESISTANCE;
     },
 
     limit: function(val, lower, upper) {
@@ -189,19 +191,31 @@ HD.Copter.prototype = {
     },
 
     getRoll: function (game) {
+        var rollPower = 0;
+    	if(game.keys.w) {
+    	rollPower = 1;
+    	} else { 
+    	rollPower = 0.25;
+    	} 
         var xd = game.mousePos.x - game.renderer.windowHalfX;
         xd = - xd * this.constants.ROLL;
         xd = xd - this.roll;
-        return this.limit(xd, - this.constants.ROLLMAX, this.constants.ROLLMAX);
+        return this.limit(xd, - this.constants.ROLLMAX * rollPower, this.constants.ROLLMAX * rollPower);
 
 
     },
 
     getPitch: function(game) {
+    	var pitchPower = 0;
+    	if(game.keys.w) {
+    	pitchPower = 1;
+    	} else { 
+    	pitchPower = 0.25;
+    	} 
         var xd = game.mousePos.y - game.renderer.windowHalfY;
         xd = xd * this.constants.PITCH;
         xd = xd - this.pitch;
-        return this.limit(xd, -this.constants.PITCHMAX, this.constants.PITCHMAX);
+        return this.limit(xd, -this.constants.PITCHMAX * pitchPower, this.constants.PITCHMAX * pitchPower);
     },
 
     getRudder: function (game) {

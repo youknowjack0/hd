@@ -1,6 +1,6 @@
 ﻿HD.Ground = function () {
 
-    var depth = 100000;
+    var depth = 10000;
     var s = 128;
     var r = 10000;
     var geom = new THREE.PlaneGeometry(s * r, s * r, 10, 10);
