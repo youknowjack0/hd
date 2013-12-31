@@ -42,6 +42,9 @@ Game.prototype = {
             case 68: //d
                 this.keys.d = true;
                 break;
+            case 69: //e
+                this.keys.e = true;
+                break;
         }
     },
 
@@ -55,6 +58,9 @@ Game.prototype = {
                 break;
             case 68: //d
                 this.keys.d = false;
+                break;
+            case 69: //e
+                this.keys.e = false;
                 break;
         }
     },

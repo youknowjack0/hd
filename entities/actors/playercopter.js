@@ -1,6 +1,8 @@
 ﻿HD.PlayerCopter = function() {
 
     HD.CopterBase.call(this);
+    this.power = 0;
+    this.powerPct = 0;
 };
 
 HD.PlayerCopter.prototype = Object.create(HD.CopterBase.prototype);
@@ -35,13 +37,14 @@ HD.PlayerCopter.prototype.positionCamera = function (game) {
 };
 
 HD.PlayerCopter.prototype.getBladeRotation = function(game) {
-    return new THREE.Quaternion().setFromAxisAngle(this.object3d.up, (game.keys.w ? this.constants.PROPPOWER : this.constants.PROP)*game.delta);
+    var pp =  this.constants.PROP + (this.constants.PROPPOWER - this.constants.PROP)*this.powerPct;
+    return new THREE.Quaternion().setFromAxisAngle(this.object3d.up, pp);
 };
 
 HD.PlayerCopter.prototype.updateAcceleration = function (game) {
     var gravity = this.constants.UP.clone().multiplyScalar(this.constants.GRAVITY);
     this.acceleration = gravity;
-    var power = this.getUpUnitVector().multiplyScalar((game.keys.w ? this.constants.POWERMAX : this.constants.POWERMIN));
+    var power = this.getUpUnitVector().multiplyScalar(this.power);
     this.acceleration.add(power);
 };
 
@@ -115,10 +118,24 @@ HD.PlayerCopter.prototype.applyRotationChange = function (game) {
     current.multiplyQuaternions(pitch, current);
 };
 
+HD.PlayerCopter.prototype.updatePower = function (game) {
+    if(game.keys.w) {
+        this.powerPct += 1 * game.delta;
+    } else {
+        this.powerPct -= 1 * game.delta;
+    }
+
+    this.powerPct = this.limit(this.powerPct, 0.0, 1.0);
+
+    this.power = this.constants.POWERMIN + (this.constants.POWERMAX - this.constants.POWERMIN) * this.powerPct;
+
+};
+
 HD.PlayerCopter.prototype.draw = function(game) {
 
     HD.CopterBase.prototype.draw.call(this,game);
 
+    this.updatePower(game);
     this.updateAcceleration(game);
     this.applyAcceleration(game);
 

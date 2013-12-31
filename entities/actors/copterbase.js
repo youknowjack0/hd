@@ -51,8 +51,8 @@ HD.CopterBase = function () {
             PITCHMAX: 0.008, //radians/s
             ROLL: 0.001, //radians/s/s
             ROLLMAX: 0.010, //radians/s
-            PROP: 10, //radians/s
-            PROPPOWER: 50,
+            PROP: Math.PI/32, //radians/s
+            PROPPOWER: Math.PI / 8   + 0.005,
             CAMOFFSET: new THREE.Vector3(100, 100, 100),
             XAXIS: new THREE.Vector3(1, 0, 0),
             YAXIS: new THREE.Vector3(0, 1, 0),
@@ -65,7 +65,7 @@ HD.CopterBase.prototype = {
 
 
     getBladeRotation: function(game) {
-        return new THREE.Quaternion().setFromAxisAngle(this.object3d.up, this.constants.PROPPOWER*game.delta);
+        return new THREE.Quaternion().setFromAxisAngle(this.object3d.up, this.constants.PROPPOWER);
     },
 
 
