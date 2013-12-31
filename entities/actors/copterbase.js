@@ -24,7 +24,7 @@ HD.CopterBase = function () {
     //copter.quaternion = new THREE.Quaternion(0, 1, 0, 0);
 
 
-    var bladeG = new THREE.PlaneGeometry(200, 8);
+    var bladeG = new THREE.PlaneGeometry(300, 12);
     var bladeMat = new THREE.MeshBasicMaterial( {color: 0x000000});
     var blade = new THREE.Mesh(bladeG, bladeMat);
     blade.position = new THREE.Vector3(0, 27, 0);
