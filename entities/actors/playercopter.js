@@ -46,6 +46,8 @@ HD.PlayerCopter.prototype.updateAcceleration = function (game) {
     this.acceleration = gravity;
     var power = this.getUpUnitVector().multiplyScalar(this.power);
     this.acceleration.add(power);
+    var airres = this.velocity.clone().normalize().multiplyScalar(-this.velocity.length()*this.velocity.length() * this.constants.RESISTANCE);
+    this.acceleration.add(airres);  
 };
 
 HD.PlayerCopter.prototype.applyAcceleration = function(game) {
@@ -77,17 +79,29 @@ HD.PlayerCopter.prototype.limit = function(val, lower, upper) {
 };
 
 HD.PlayerCopter.prototype.getRoll = function (game) {
+	 var rollPower = 0;
+    	if(game.keys.w) {
+    	rollPower = 1;
+    	} else { 
+    	rollPower = 0.25;
+    	} 
     var xd = game.mousePos.x - game.renderer.windowHalfX;
     xd = - xd * this.constants.ROLL;
     xd = xd - this.roll;
-    return this.limit(xd, - this.constants.ROLLMAX, this.constants.ROLLMAX);
+    return this.limit(xd, - this.constants.ROLLMAX * rollPower, this.constants.ROLLMAX* rollPower);
 };
 
 HD.PlayerCopter.prototype.getPitch = function(game) {
+		var pitchPower = 0;
+    	if(game.keys.w) {
+    	pitchPower = 1;
+    	} else { 
+    	pitchPower = 0.25;
+    	}
     var xd = game.mousePos.y - game.renderer.windowHalfY;
     xd = xd * this.constants.PITCH;
     xd = xd - this.pitch;
-    return this.limit(xd, -this.constants.PITCHMAX, this.constants.PITCHMAX);
+    return this.limit(xd, -this.constants.PITCHMAX * pitchPower, this.constants.PITCHMAX * pitchPower);
 };
 
 HD.PlayerCopter.prototype.getRudder = function (game) {

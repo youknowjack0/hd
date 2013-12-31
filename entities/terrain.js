@@ -84,7 +84,7 @@ function getHeightData(img) {
 
     return data;
 };
-	};
+	
 
 			
 

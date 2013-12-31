@@ -37,20 +37,20 @@ HD.CopterBase = function () {
 
     // adjust these constants to make it awesome
     this.constants = {
-        POWERMAX: 60,
-            POWERMIN: 0,//power at idle
-            GRAVITY: -20.81,
-            UP: new THREE.Vector3(0, 1, 0),
-            RESISTANCE: 0.2,
-            RUDDER: 0.02, //radians/s/s
-            RUDDERMAX: 4, //radians/s
-            RUDDERRESISTANCE: 0.5,
-            ROLLRESISTANCE: 0.5,
-            PITCHRESISTANCE: 0.5,
-            PITCH: 0.005, //radians/s/s
-            PITCHMAX: 0.008, //radians/s
-            ROLL: 0.001, //radians/s/s
-            ROLLMAX: 0.010, //radians/s
+      	  POWERMAX: 30,
+     	   POWERMIN: 0,//power at idle
+     	   GRAVITY: -9.81,
+    	   UP: new THREE.Vector3(0, 1, 0),
+     	   RESISTANCE: 0.000000505,
+     	   RUDDER: 0.015, //radians/s/s
+     	   RUDDERMAX: 4, //radians/s
+    	    RUDDERRESISTANCE: 0.5,
+    	    ROLLRESISTANCE: 0,
+     	   PITCHRESISTANCE: 0,
+    	    PITCH: 0.001, //radians/s/s
+     	   PITCHMAX: 0.006, //radians/s
+    	    ROLL: 0.001, //radians/s/s
+     	   ROLLMAX: 0.006, //radians/s
             PROP: Math.PI/32, //radians/s
             PROPPOWER: Math.PI / 8   + 0.005,
             CAMOFFSET: new THREE.Vector3(100, 100, 100),
