@@ -6,7 +6,7 @@
 
     this.copter = new HD.PlayerCopter();
     this.addEntity(this.copter);
-    this.addEntity(new HD.Terrain());
+    new HD.Terrain(this);
     this.addEntity(new HD.SceneLight());
     this.net = new HD.Network();
     this.net.join(this);

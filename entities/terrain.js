@@ -1,9 +1,10 @@
-HD.Terrain = function () {
+HD.Terrain = function (game) {
 
     var FLOOR = -320000;
     var planeMesh;
     var tex = THREE.ImageUtils.loadTexture('assets/grass128.png');
-    var img = THREE.ImageUtils.loadTexture('assets/heightmap_128.jpg');
+
+    var plane = new THREE.PlaneGeometry(100, 100, 127, 127);
 
     tex.repeat.x = 100;
     tex.repeat.y = 100;
@@ -11,28 +12,31 @@ HD.Terrain = function () {
     tex.wrapS = true;
     tex.wrapT = true;
 
-    var data = getHeightData(img);
-    var plane = new THREE.PlaneGeometry(100, 100, 127, 127);
-
-    for (var i = 0, l = plane.vertices.length; i < l; i++) {
-        plane.vertices[i].z = data[i];
-    }
-
-    plane.computeFaceNormals();
-    plane.computeVertexNormals();
-
     var mat = new THREE.MeshPhongMaterial({
         map: tex,
         ambient: 0x050505, specular: 0x555555, shininess: 15,
         //bumpMap: tex, bumpScale: 1900,
         color: 0xFFFFFF,
-        vertexColors: THREE.VertexColors,
+        vertexColors: THREE.VertexColors
     })
 
-    planeMesh = addMesh(plane, 16000, 0, FLOOR, 0, -1.57, 0, 0, mat);
+    var me = this;
 
+    var img = THREE.ImageUtils.loadTexture('assets/heightmap_128.jpg',null, function() {
+        var data = getHeightData(img);
+        for (var i = 0, l = plane.vertices.length; i < l; i++) {
+            plane.vertices[i].z = data[i];
+        }
+        planeMesh = addMesh(plane, 16000, 0, FLOOR, 0, -1.57, 0, 0, mat);
 
-    this.object3d = planeMesh;
+        plane.computeFaceNormals();
+        plane.computeVertexNormals();
+
+        me.object3d = planeMesh;
+
+        game.addEntity(me);
+    });
+
 
 };
 
