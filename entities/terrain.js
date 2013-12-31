@@ -1,20 +1,23 @@
 HD.Terrain = function (game) {
 
-    var FLOOR = -320000;
+    var FLOOR = -12000;
     var planeMesh;
-    var tex = THREE.ImageUtils.loadTexture('assets/grass128.png');
+    var tex = THREE.ImageUtils.loadTexture('assets/dirt512.png');
 
-    var plane = new THREE.PlaneGeometry(100, 100, 127, 127);
+    var width = 128;
+    var height = 128;
 
-    tex.repeat.x = 100;
-    tex.repeat.y = 100;
+    var plane = new THREE.PlaneGeometry(100, 100, width-1, height-1);
+
+    tex.repeat.x = 500;
+    tex.repeat.y = 500;
 
     tex.wrapS = true;
     tex.wrapT = true;
 
     var mat = new THREE.MeshPhongMaterial({
         map: tex,
-        ambient: 0x050505, specular: 0x555555, shininess: 15,
+        ambient: 0x224444, specular: 0x555555, shininess: 0,
         //bumpMap: tex, bumpScale: 1900,
         color: 0xFFFFFF,
         vertexColors: THREE.VertexColors
@@ -22,15 +25,17 @@ HD.Terrain = function (game) {
 
     var me = this;
 
-    var img = THREE.ImageUtils.loadTexture('assets/heightmap_128.jpg',null, function() {
-        var data = getHeightData(img);
-        for (var i = 0, l = plane.vertices.length; i < l; i++) {
-            plane.vertices[i].z = data[i];
+    var img = THREE.ImageUtils.loadTexture('assets/GrandCanyon128.png',null, function() {
+        var data = getHeightData(img, width,height);
+        for (var i = 0; i < plane.vertices.length; i++) {
+            plane.vertices[i].z = data[i]*10;
         }
-        planeMesh = addMesh(plane, 16000, 0, FLOOR, 0, -1.57, 0, 0, mat);
+        planeMesh = addMesh(plane, 2000, 0, FLOOR, 0, -1.57, 0, 0, mat);
 
         plane.computeFaceNormals();
         plane.computeVertexNormals();
+
+        planeMesh.receiveShadow= true;
 
         me.object3d = planeMesh;
 
@@ -63,27 +68,24 @@ function addMesh(geometry, scale, x, y, z, rx, ry, rz, material) {
     return mesh;
 };
 
-function getHeightData(img) {
+function getHeightData(img, width, height) {
     var canvas = document.createElement('canvas');
-    canvas.width = 128;
-    canvas.height = 128;
+    canvas.width = width;
+    canvas.height = height;
     var context = canvas.getContext('2d');
 
-    var size = 128 * 128, data = new Float32Array(size);
+    var size = width * height, data = new Float32Array(size);
 
     context.drawImage(img.image, 0, 0);
 
-    for (var i = 0; i < size; i++) {
-        data[i] = 0
-    }
 
-    var imgd = context.getImageData(0, 0, 128, 128);
+    var imgd = context.getImageData(0, 0, width, height);
     var pix = imgd.data;
 
     var j = 0;
     for (var i = 0, n = pix.length; i < n; i += (4)) {
         var all = pix[i] + pix[i + 1] + pix[i + 2];
-        data[j++] = all / 30;
+        data[j++] = all / (255*3);
     }
 
     return data;

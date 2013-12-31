@@ -30,10 +30,17 @@ HD.PlayerCopter.prototype.positionCamera = function (game) {
 
     camera.position = new THREE.Vector3(0, 0, 1);
     camera.position.applyQuaternion(q);
-    camera.position.multiplyScalar(300);
+    camera.position.multiplyScalar(50);
 
     camera.position.add(this.object3d.position);
-    camera.position.add(this.getUpUnitVector().multiplyScalar(100));
+    camera.position.add(this.getUpUnitVector().multiplyScalar(30));
+
+    //game.directionalLight.position = this.object3d.position + game.directionalLight.offsetA.clone();//.multiplyScalar(10);
+    game.directionalLight.position = this.object3d.position.clone();
+    game.directionalLight.position.y += 100;
+    game.directionalLight.position.z += 100;
+
+    game.directionalLight.target.position = this.object3d.position;
 };
 
 HD.PlayerCopter.prototype.getBladeRotation = function(game) {
@@ -79,12 +86,13 @@ HD.PlayerCopter.prototype.limit = function(val, lower, upper) {
 };
 
 HD.PlayerCopter.prototype.getRoll = function (game) {
-	 var rollPower = 0;
-    	if(game.keys.w) {
-    	rollPower = 1;
-    	} else { 
-    	rollPower = 0.25;
-    	} 
+    var rollPower = 1.0;
+    //review this
+    /*if(game.keys.w) {
+    rollPower = 1;
+    } else {
+    rollPower = 0.25;
+    } */
     var xd = game.mousePos.x - game.renderer.windowHalfX;
     xd = - xd * this.constants.ROLL;
     xd = xd - this.roll;
@@ -92,12 +100,13 @@ HD.PlayerCopter.prototype.getRoll = function (game) {
 };
 
 HD.PlayerCopter.prototype.getPitch = function(game) {
-		var pitchPower = 0;
-    	if(game.keys.w) {
-    	pitchPower = 1;
-    	} else { 
-    	pitchPower = 0.25;
-    	}
+    var pitchPower = 1;
+    //review this
+    /*if(game.keys.w) {
+        pitchPower = 1;
+    } else {
+        pitchPower = 0.25;
+    }*/
     var xd = game.mousePos.y - game.renderer.windowHalfY;
     xd = xd * this.constants.PITCH;
     xd = xd - this.pitch;

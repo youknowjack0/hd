@@ -1,26 +1,21 @@
 ﻿
-HD.SceneLight = function () {
-    var directionalLight = new THREE.DirectionalLight(0xffffff);
-    directionalLight.position.set(1, 1, 1).normalize();
-    this.object3d = directionalLight;
+HD.SceneLight = function (game) {
+    var dl = new THREE.DirectionalLight(0xffffff);
+    dl.offsetA =  new THREE.Vector3(1, 1, 1).normalize();
+    this.object3d = dl;
 
-    directionalLight.castShadow = true;
-    // directionalLight.shadowCameraVisible = true;
+    dl.castShadow = true;
+    //dl.shadowCameraVisible = true;
+    dl.shadowCameraNear = 0;
+    dl.shadowCameraFar = 50000;
+    dl.shadowCameraLeft = -100;
+    dl.shadowCameraRight = 100;
+    dl.shadowCameraBottom = -100;
+    dl.shadowCameraTop = 100;
 
-    directionalLight.shadowMapWidth = 2048;
-    directionalLight.shadowMapHeight = 2048;
+    game.directionalLight = dl;
 
-    directionalLight.shadowCameraNear = 200;
-    directionalLight.shadowCameraFar = 1500;
 
-    directionalLight.shadowCameraLeft = -500;
-    directionalLight.shadowCameraRight = 500;
-    directionalLight.shadowCameraTop = 500;
-    directionalLight.shadowCameraBottom = -500;
-
-    directionalLight.shadowBias = -0.005;
-    directionalLight.shadowDarkness = 0.35;
-    console.log("added light");
 };
 
 HD.SceneLight.prototype = {

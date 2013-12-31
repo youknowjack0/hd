@@ -6,6 +6,8 @@ HD.Renderer = function() {
     var container = window.document.createElement('div');
     window.document.body.appendChild(container);
 
+
+
     var info = window.document.createElement('div');
     info.style.position = 'absolute';
     info.style.top = '10px';
@@ -31,7 +33,10 @@ HD.Renderer = function() {
     gl.shadowMapCullFace = THREE.CullFaceBack;
 
 
-    
+    gl.shadowMapSoft = true;
+
+    gl.shadowCameraNear = 3;
+
 
     container.appendChild(gl.domElement);
 
@@ -39,7 +44,13 @@ HD.Renderer = function() {
     this.camera = camera;
     camera.position = new THREE.Vector3(100, 100, 100);
 
+    gl.shadowCameraFar = camera.far;
+    gl.shadowCameraFov = 70;
 
+    gl.shadowMapBias = 0.0039;
+    gl.shadowMapDarkness = 0.5;
+    gl.shadowMapWidth = 1024;
+    gl.shadowMapHeight = 1024;
 
 
     /*
