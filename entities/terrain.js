@@ -4,28 +4,29 @@ HD.Terrain = function (game) {
     var planeMesh;
     var tex = THREE.ImageUtils.loadTexture('assets/dirt512.png');
 
-    var width = 128;
-    var height = 128;
+    var width = 512;
+    var height = 512;
 
     var plane = new THREE.PlaneGeometry(100, 100, width-1, height-1);
 
-    tex.repeat.x = 500;
-    tex.repeat.y = 500;
+    tex.repeat.x = 1000;
+    tex.repeat.y = 1000;
 
     tex.wrapS = true;
     tex.wrapT = true;
 
-    var mat = new THREE.MeshPhongMaterial({
-        map: tex,
-        ambient: 0x224444, specular: 0x555555, shininess: 0,
+    var mat = new THREE.MeshBasicMaterial({
+        //map: tex,
+        //ambient: 0x224444, specular: 0x555555, shininess: 0,
         //bumpMap: tex, bumpScale: 1900,
-        color: 0xFFFFFF,
-        vertexColors: THREE.VertexColors
+        //color: 0xFFFFFF,
+        //vertexColors: THREE.VertexColors
+        vertexColors: THREE.FaceColors
     })
 
     var me = this;
 
-    var img = THREE.ImageUtils.loadTexture('assets/GrandCanyon128.png',null, function() {
+    var img = THREE.ImageUtils.loadTexture('assets/GrandCanyon.png',null, function() {
         var data = getHeightData(img, width,height);
         for (var i = 0; i < plane.vertices.length; i++) {
             plane.vertices[i].z = data[i]*10;
@@ -33,7 +34,19 @@ HD.Terrain = function (game) {
         planeMesh = addMesh(plane, 2000, 0, FLOOR, 0, -1.57, 0, 0, mat);
 
         plane.computeFaceNormals();
-        plane.computeVertexNormals();
+
+        var fakeLight = new THREE.Vector3(1,1,1).normalize();
+
+
+        for(var i = 0; i< plane.faces.length; i++) {
+            var c = plane.faces[i].normal.dot(fakeLight);
+             c = Math.floor((c + 1)/2 * 0xFF);
+            plane.faces[i].color = new THREE.Color(c + 0x100 * c + 0x10000 * c);
+
+        }
+
+
+        //plane.computeVertexNormals();
 
         planeMesh.receiveShadow= true;
 

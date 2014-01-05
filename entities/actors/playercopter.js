@@ -38,6 +38,7 @@ HD.PlayerCopter.prototype.positionCamera = function (game) {
     //game.directionalLight.position = this.object3d.position + game.directionalLight.offsetA.clone();//.multiplyScalar(10);
     game.directionalLight.position = this.object3d.position.clone();
     game.directionalLight.position.y += 100;
+    game.directionalLight.position.x += 100;
     game.directionalLight.position.z += 100;
 
     game.directionalLight.target.position = this.object3d.position;
